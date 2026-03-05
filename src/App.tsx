@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast';
 
+// Define color classes for each JSON data type
 const COLORS = {
   key: "text-sky-400",
   string: "text-emerald-400",
@@ -8,6 +9,12 @@ const COLORS = {
   boolean: "text-purple-400",
   null: "text-rose-400",
 }
+
+/**
+ * Highlights JSON data based on its type
+ * @param json 
+ * @returns coloured text based on JSON type
+ */
 
 function highlight(json: string) {
   return json.replace(
@@ -33,7 +40,8 @@ function App() {
   const [copied, setCopied] = useState(false)
   const [indent, setIndent] = useState(2)
 
-  const format = useCallback(() => {
+  // Function to format JSON
+  const format = () => {
     try {
       const parsed = JSON.parse(input);
       setOutput(JSON.stringify(parsed, null, indent))
@@ -42,9 +50,10 @@ function App() {
       setError((e as Error).message)
       setOutput('')
     }
-  }, [input, indent])
+  }
 
-  const minify = useCallback(() => {
+  // Function to minify/compact JSON
+  const minify = () => {
     try {
       const parsed = JSON.parse(input);
       setOutput(JSON.stringify(parsed))
@@ -52,9 +61,10 @@ function App() {
     } catch (e) {
       setError((e as Error).message)
       setOutput('')
-    } 
-  }, [input])
+    }
+  }
 
+  // Function to copy formatted JSON
   const copy = () => {
     navigator.clipboard.writeText(output)
     setCopied(true)
@@ -66,8 +76,9 @@ function App() {
     }, 2000);
   }
 
+  // Function to validate JSON
   const validateJSON = () => {
-    if(!input) return
+    if (!input) return
     try {
       JSON.parse(input)
       toast.success('JSON is valid', {
@@ -82,6 +93,7 @@ function App() {
 
   return (
     <div className='min-h-screen bg-gray-950 text-gray-100 flex flex-col'>
+      {/* Header */}
       <header className='border-b border-gray-800 px-6 py-4 flex items-center justify-between'>
         <h1 className='text-xl font-mono font-bold tracking-tight text-white'>
           JSON <span className='text-sky-400'>Formatter</span>
@@ -94,15 +106,17 @@ function App() {
         </div>
       </header>
 
+      {/* Buttons */}
       <div className='flex gap-2 px-6 py-3 border-b border-gray-800'>
         <button onClick={format} className='px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-white text-sm font-mono rounded transition-colors cursor-pointer'>Format</button>
         <button onClick={minify} className='px-4 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm font-mono rounded transition-colors cursor-pointer'>Minify</button>
         <button onClick={validateJSON} className='px-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-emerald-200 text-sm font-mono rounded transition-colors cursor-pointer'>Validate</button>
-        { output && (
-          <button onClick={copy} className='ml-auto px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-mono rounded transition-colors'>{copied ? "Copied!" : "Copy" }</button>
+        {output && (
+          <button onClick={copy} className='ml-auto px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-mono rounded transition-colors'>{copied ? "Copied!" : "Copy"}</button>
         )}
       </div>
 
+      {/* Editor */}
       <div className='flex flex-1 divide-x divide-gray-800 overflow-hidden min-w-0'>
         <div className='flex flex-col flex-1'>
           <div className='px-4 py-2 text-xs font-mono text-gray-500 bg-gray-900 border-b border-gray-800'>
@@ -117,10 +131,10 @@ function App() {
           </div>
           {error ? (
             <div className='p-5 text-rose-400 font-mono text-sm'>
-             ✖ {error}
+              ✖ {error}
             </div>
           ) : (
-            <pre className='flex-1 overflow-auto p-4 font-mono text-sm leading-relaxed break-all whitespace-pre-wrap' dangerouslySetInnerHTML={{ __html: highlight(output) }}/>
+            <pre className='flex-1 overflow-auto p-4 font-mono text-sm leading-relaxed break-all whitespace-pre-wrap' dangerouslySetInnerHTML={{ __html: highlight(output) }} />
           )}
         </div>
       </div>
